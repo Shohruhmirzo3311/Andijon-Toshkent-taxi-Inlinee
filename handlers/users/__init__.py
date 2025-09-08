@@ -1,11 +1,4 @@
-from . import aboutBot
-from . import help
-from . import getData
-from . import regexValidation
-from . import menuHandlers
-from . import Mijoz
-from . import Driver
-from . import aboutBot
-from . import start
-from . import inlineHandlers
-from . import echo
+from .eco_help_start import aboutBot, help
+from .driver import delete_driver, register_driver
+from . import (Driver, Mijoz, back_inline, inlineHandlers, menuHandlers, regexValidation, start, driver, eco_help_start, messages)
+

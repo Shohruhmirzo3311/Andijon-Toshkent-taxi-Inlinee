@@ -1,9 +1,10 @@
 import re
+
 from aiogram import types
 from aiogram.dispatcher import FSMContext
+
 from loader import dp
 from states.DriverData import DriverReg
-
 
 phone_pattern = re.compile(
     r"(?:\+?\d{1,3})?[\s\-]?\(?\d{2,3}\)?[\s\-]?\d{2,3}[\s\-]?\d{2}[\s\-]?\d{2,4}"

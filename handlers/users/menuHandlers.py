@@ -1,9 +1,9 @@
 from aiogram import types
-from keyboards.default.startMenu import Startmenu
 from aiogram.dispatcher.filters import Command, Text
-from keyboards.inline.menuKeyboard import driver_action_menu, bot_action_menu
 
-from loader import dp 
+from keyboards.default.startMenu import Startmenu
+from keyboards.inline.menuKeyboard import bot_action_menu, driver_action_menu
+from loader import dp
 
 
 @dp.message_handler(Command("menu"))

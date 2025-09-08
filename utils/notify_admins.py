@@ -4,7 +4,6 @@ from aiogram import Dispatcher
 
 from data.config import ADMINS
 
-
 SUPERUSERS = [7643640800]
 
 

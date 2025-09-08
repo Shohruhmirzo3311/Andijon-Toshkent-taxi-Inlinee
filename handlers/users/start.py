@@ -1,16 +1,10 @@
-from aiogram import types
+from aiogram import filters, types
 from aiogram.dispatcher.filters.builtin import CommandStart
-from aiogram import filters
 
-
-
-from loader import dp
-from filters import IsPrivate, IsGroup
-from keyboards.default.startMenu import Startmenu, roleMenu
 from data.group_id import SUPERUSERS
-
-
-
+from filters import IsGroup, IsPrivate
+from keyboards.default.startMenu import Startmenu, roleMenu
+from loader import dp
 
 
 @dp.message_handler(IsPrivate(), filters.IDFilter(chat_id=SUPERUSERS), commands=['start'])
@@ -24,6 +18,7 @@ async def admin_start(msg: types.Message):
 async def user_start(message: types.Message):
     if message.from_user.id in SUPERUSERS:
         return
+
     await message.answer(f"Salom, {message.from_user.full_name}!")
     await message.answer("Tanlang:", reply_markup=roleMenu)
 

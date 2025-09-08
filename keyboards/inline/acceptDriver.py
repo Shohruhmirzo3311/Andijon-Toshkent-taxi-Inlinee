@@ -1,4 +1,5 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
 
 worker_task_menu = InlineKeyboardMarkup(row_width=1)
 
@@ -11,3 +12,11 @@ contact = InlineKeyboardButton(
 worker_task_menu.add(contact)
 
 
+driver_status = InlineKeyboardMarkup(row_width=2)
+driver_status.add(InlineKeyboardButton("Comfort", callback_data="category:comfort"))
+driver_status.add(InlineKeyboardButton("Oddiy", callback_data="category:oddiy"))
+    
+    
+
+
+admin_keyboard = InlineKeyboardMarkup(row_width=2)

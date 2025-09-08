@@ -1,12 +1,13 @@
 from aiogram import types
+
+from keyboards.default.startMenu import Startmenu
 from keyboards.inline.callbackData import bot_callback
 from keyboards.inline.menuKeyboard import bot_action_menu
-from keyboards.default.startMenu import Startmenu
-
-
 from loader import dp
 
+
 @dp.callback_query_handler(bot_callback.filter(action="about"))
+@dp.message_handler(text="about")
 async def about_bot(call: types.CallbackQuery):
     await call.message.delete()
     await call.answer(cache_time=60)
@@ -23,21 +24,15 @@ async def about_bot(call: types.CallbackQuery):
         "📞 *Aloqa:* Agar sizda savollar yoki takliflar bo'lsa, iltimos, biz bilan bog'laning.\n\n Mirzohid \n\n +9989 94 053 55 50"
     )
     
-    await call.message.answer(about_text, parse_mode="Markdown", reply_markup=bot_action_menu)
+    await call.message.answer(about_text, parse_mode="Markdown")
 
-
-
-@dp.callback_query_handler(text="cancel")
-async def go_back(call: types.CallbackQuery):
-    await call.message.delete()
-    await call.answer(cache_time=60)
-    await call.message.answer("", reply_markup=Startmenu)
 
 
 @dp.callback_query_handler(bot_callback.filter(action="comments"))
 async def feedback(call: types.CallbackQuery):
     await call.message.delete()
     await call.answer(cache_time=60)
+    
     await call.message.answer("Aka telefon qiloras... \n\n Shohruhmirzo \n\n +9989 93 754 33 11")
 
 

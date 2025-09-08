@@ -1,7 +1,5 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ContentType
-
-
-
+from aiogram.types import (ContentType, InlineKeyboardButton,
+                           InlineKeyboardMarkup)
 
 
 def make_profile_button(user):
