@@ -1,7 +1,9 @@
 from aiogram import types
 from aiogram.dispatcher.filters import BoundFilter
 
-from data.group_id import SUPERUSERS
+from utils.db_api.admin_data import laod_admins
+
+
 
 
 class AdminFilter(BoundFilter):
@@ -25,9 +27,11 @@ class IsSuperUser(BoundFilter):
         Works for both messages and callback queries.
         """
         user_id = None
+        admins_list = await laod_admins()
+
         if isinstance(obj, types.Message):
             user_id = obj.from_user.id
         elif isinstance(obj, types.CallbackQuery):
             user_id = obj.from_user.id
 
-        return (user_id in SUPERUSERS) == self.is_superuser
+        return (user_id in admins_list) == self.is_superuser

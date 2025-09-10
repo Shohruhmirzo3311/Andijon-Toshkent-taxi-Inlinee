@@ -6,7 +6,7 @@ from sqlalchemy import engine_from_config, pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from data.driverDb import Base  # Import your Base from models
+from utils.db_api.driverDb import Base  # Import your Base from models
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

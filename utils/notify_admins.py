@@ -1,14 +1,14 @@
 import logging
 
 from aiogram import Dispatcher
+from utils.db_api.admin_data import ADMINS, laod_admins
 
-from data.config import ADMINS
-
-SUPERUSERS = [7643640800]
 
 
 async def on_startup_notify(dp: Dispatcher):
-    for admin in SUPERUSERS:
+    admin_list = await laod_admins()
+    
+    for admin in admin_list:
         try:
             await dp.bot.send_message(admin, "Bot ishga tushdi")
 

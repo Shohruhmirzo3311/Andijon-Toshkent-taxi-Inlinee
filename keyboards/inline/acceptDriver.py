@@ -1,6 +1,5 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-
 worker_task_menu = InlineKeyboardMarkup(row_width=1)
 
 contact = InlineKeyboardButton(

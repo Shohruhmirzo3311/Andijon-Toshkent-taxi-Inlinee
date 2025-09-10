@@ -1,19 +1,17 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.utils.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton
+from aiogram.utils.callback_data import CallbackData
 
-import data.driverDb as db  # Your DB module
-import data.init_tables as ses
+import utils.db_api.driverDb as db  # Your DB module
+import utils.db_api.init_tables as ses
 from data.group_id import SUPERUSERS
 from filters import IsPrivate, IsSuperUser
-from handlers.users.regexValidation import (NAME_RE, car_number_pattern,
-                                            phone_pattern)
+from handlers.self_registration.extractor import extract_name, extract_car, extract_phone, normalize_text
+from keyboards.inline.acceptDriver import admin_keyboard, driver_status
+from keyboards.inline.callbackData import admin_driver_callback
 from loader import dp
 from states.DriverData import AdminApprove, DriverReg
-from keyboards.inline.acceptDriver import driver_status
-from keyboards.inline.callbackData import admin_driver_callback
-from keyboards.inline.acceptDriver import admin_keyboard
 
 
 @dp.message_handler(IsPrivate(), lambda msg: "🚖 Haydovch" in msg.text)
@@ -33,28 +31,11 @@ async def driver_become(message: types.Message):
 
 
 
-def extract_name(text: str, fallback: str) -> str:
-    m = NAME_RE.search(text)
-    return m.group(2).strip() if m else fallback
-
-
-
-def extract_phone(text: str, fallback: str = "") -> str:
-    clean = text.replace(" ", "").replace("-", "")
-    m = phone_pattern.search(text) or phone_pattern.search(clean)
-    return m.group(0).strip() if m else fallback
-
-
-
-def extract_car(text: str, fallback: str = "") -> str:
-    m = car_number_pattern.search(text.upper())
-    return m.group(0).strip() if m else fallback
-
 
 
 @dp.message_handler(state=DriverReg.form, content_types=types.ContentTypes.TEXT)
 async def driver_form_handler(message: types.Message, state: FSMContext):
-    text = message.text
+    text = normalize_text(message.text)
 
     ism = extract_name(text, fallback=message.from_user.full_name)
     phone = extract_phone(text, fallback=message.from_user.username or "")

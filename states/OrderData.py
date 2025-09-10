@@ -8,5 +8,3 @@ class OrderForm(StatesGroup):
 
 
 
-class AddCity(StatesGroup):
-    name = State()

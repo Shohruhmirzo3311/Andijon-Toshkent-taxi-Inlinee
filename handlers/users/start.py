@@ -2,12 +2,16 @@ from aiogram import filters, types
 from aiogram.dispatcher.filters.builtin import CommandStart
 
 from data.group_id import SUPERUSERS
-from filters import IsGroup, IsPrivate
+from filters import IsGroup, IsPrivate, IsSuperUser
 from keyboards.default.startMenu import Startmenu, roleMenu
 from loader import dp
+from utils.db_api.admin_data import ADMINS, laod_admins
 
 
-@dp.message_handler(IsPrivate(), filters.IDFilter(chat_id=SUPERUSERS), commands=['start'])
+
+
+
+@dp.message_handler(IsPrivate(), IsSuperUser(), commands=['start'])
 async def admin_start(msg: types.Message):
     await msg.answer('Xush kelibsiz, Admin!', reply_markup=Startmenu)
 
@@ -16,7 +20,9 @@ async def admin_start(msg: types.Message):
 
 @dp.message_handler(IsPrivate(), CommandStart())
 async def user_start(message: types.Message):
-    if message.from_user.id in SUPERUSERS:
+    admins_list = await laod_admins()
+    
+    if message.from_user.id in admins_list:
         return
 
     await message.answer(f"Salom, {message.from_user.full_name}!")
@@ -27,7 +33,10 @@ async def user_start(message: types.Message):
 
 @dp.message_handler(IsGroup(), CommandStart())
 async def group_start(message: types.Message):
-    if message.from_user.id in SUPERUSERS:
+    admins_list = await laod_admins()
+    
+    if message.from_user.id in admins_list:
         return
     await message.answer(f"Salom, {message.from_user.full_name}\n\n Guruhga xush kelibsiz!")
     
+

@@ -2,14 +2,15 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from sqlalchemy.sql import select
 
-from loader import dp
+import utils.db_api.driverDb as db
+import utils.db_api.init_tables as sas
 from filters import IsSuperUser
-from states.DriverData import DeleteDriver
 from handlers.users.regexValidation import car_number_pattern
-import data.driverDb as db
-from states.state_finish import safe_state_finish
-from keyboards.inline.menuKeyboard import driver_action_menu
 from keyboards.inline.callbackData import driver_callback
+from keyboards.inline.menuKeyboard import driver_action_menu
+from loader import dp
+from states.DriverData import DeleteDriver
+from states.state_finish import safe_state_finish
 
 
 @dp.callback_query_handler(IsSuperUser(), driver_callback.filter(action="delete_driver"))
@@ -37,7 +38,7 @@ async def process_delete_driver(message: types.Message, state: FSMContext):
         )
         return
 
-    async with db.AsyncSessionLocal() as session:
+    async with sas.AsyncSessionLocal() as session:
         result = await session.execute(
             select(db.Driver).where(db.Driver.car_number == car_number)
         )
@@ -59,19 +60,19 @@ async def process_delete_driver(message: types.Message, state: FSMContext):
         f"🚗 Mashina: {driver.car_number}\n"
         f"📂 Toifa: {driver.type}\n\n"
         f"⚠️ Bu amalni qaytarib bo'lmaydi!\n\n"
-        f"👉 Tasdiqlash uchun: /confirm\n"
-        f"👉 Bekor qilish uchun: /cancel"
+        f"👉 Tasdiqlash uchun: /confirm_delete\n"
+        f"👉 Bekor qilish uchun: /cancel_delete"
     )
     await DeleteDriver.confirmation.set()
 
 
-@dp.message_handler(commands=["confirm"], state=DeleteDriver.confirmation)
+@dp.message_handler(commands=["confirm_delete"], state=DeleteDriver.confirmation)
 async def confirm_delete_driver(message: types.Message, state: FSMContext):
     data = await state.get_data()
     car_number = data.get("car_number")
     name = data.get("name")
 
-    async with db.AsyncSessionLocal() as session:
+    async with sas.AsyncSessionLocal() as session:
         deleted = await db.delete_driver_by_car_number(session, car_number)
 
     if deleted:
@@ -84,7 +85,7 @@ async def confirm_delete_driver(message: types.Message, state: FSMContext):
     await safe_state_finish(state)
 
 
-@dp.message_handler(commands=["cancel"], state=DeleteDriver.confirmation)
+@dp.message_handler(commands=["cancel_delete"], state=DeleteDriver.confirmation)
 async def cancel_delete_driver(message: types.Message, state: FSMContext):
     await message.answer(
         "❌ Haydovchini o'chirish bekor qilindi.\n\n"

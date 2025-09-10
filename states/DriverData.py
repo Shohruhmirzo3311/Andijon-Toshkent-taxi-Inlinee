@@ -1,4 +1,3 @@
-from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 
@@ -29,3 +28,18 @@ class UpdateDriver(StatesGroup):
     form = State()
     waiting_for_new_data = State()
     second = State()
+    
+
+
+class RouteCreation(StatesGroup):
+    waiting_for_fromCity = State()
+    waiting_for_toCity = State()
+
+
+class RouteUpdate(StatesGroup):
+    waiting_for_fromCity = State()
+    waiting_for_toCity = State()
+
+
+class RouteDelete(StatesGroup):
+    pass

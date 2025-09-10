@@ -1,14 +1,13 @@
 from typing import List, Optional
 
-from sqlalchemy import (BigInteger, Boolean, Column, ForeignKey, UniqueConstraint, 
-                        DateTime, Integer, String,
-                        delete, update)
-from sqlalchemy.orm import relationship
+from sqlalchemy import (BigInteger, Boolean, Column, DateTime, ForeignKey,
+                        Integer, String, UniqueConstraint, delete, update)
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.orm import relationship
 
-from data.init_tables import Base
+from utils.db_api.init_tables import Base
 
 
 class City(Base):
@@ -17,12 +16,15 @@ class City(Base):
     id = Column(Integer, primary_key=True, unique=True)
     name = Column(String, unique=True)
     
+    drivers = relationship("Driver", back_populates="city", cascade="all, delete")
+    routes = relationship("Route", back_populates="route", cascade="all, delete")
 
 
 class Route(Base):
     __tablename__ = "routes"
 
     id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True, unique=True)
     from_city_id = Column(Integer, ForeignKey("cities.id", ondelete="CASCADE"))
     to_city_id = Column(Integer, ForeignKey("cities.id", ondelete="CASCADE"))
 
@@ -43,14 +45,11 @@ async def create_city(db: AsyncSession, name: str) -> City:
     return new_city
 
 
-# Get city with name
-async def get_city_by_name(db: AsyncSession, name: str) -> City | None:
-    result = await db.execute(select(City).where(City.name == name))
-    return result.scalar_one_or_none()
+
 
 # ✅ Read all
 async def get_all_cities(db: AsyncSession) -> List[City]:
-    result = await db.execute(select(City))
+    result = await db.execute(select(City.name))
     return result.scalars().all()
 
 
@@ -60,34 +59,39 @@ async def get_city_by_id(db: AsyncSession, city_id: int) -> Optional[City]:
     return result.scalar_one_or_none()
 
 
+
+
+# Get by name
 async def get_city_by_name(db: AsyncSession, name: str) -> Optional[City]:
-    result = await db.execute(select(City).where(City.name == name))
+    result = await db.execute(select(City).where(City.name.ilike(name)))
     return result.scalar_one_or_none()
 
-
-# ✅ Update
-async def update_city(db: AsyncSession, city_id: int, new_name: str) -> Optional[City]:
+# Update
+async def update_city(db: AsyncSession, city_id: int, name: str) -> Optional[City]:
     result = await db.execute(select(City).where(City.id == city_id))
     city = result.scalar_one_or_none()
     if not city:
         return None
 
-    city.name = new_name
+    city.name = name
     await db.commit()
     await db.refresh(city)
     return city
 
 
+
 # ✅ Delete
-async def delete_city(db: AsyncSession, city_id: int) -> bool:
-    result = await db.execute(select(City).where(City.id == city_id))
+async def delete_city(db: AsyncSession, name: str) -> City | None:
+    result = await db.execute(
+        select(City).where(City.name.ilike(name))
+    )
     city = result.scalar_one_or_none()
     if not city:
-        return False
+        return None
 
     await db.delete(city)
     await db.commit()
-    return True
+    return city
 
 
 
@@ -101,8 +105,8 @@ async def create_route(session: AsyncSession, from_city: str, to_city: str) -> R
         session.add(from_city)
         await session.flush()
         
-    result = await session.execute(select(City).where(City.name == to_city))
-    to_obj = result.scalar_one_or_none()
+    result2 = await session.execute(select(City).where(City.name == to_city))
+    to_obj = result2.scalar_one_or_none()
     if not to_obj:
         to_obj = City(name=to_city)
         session.add(to_obj)
@@ -119,3 +123,5 @@ async def create_route(session: AsyncSession, from_city: str, to_city: str) -> R
 async def get_all_routes(session: AsyncSession) -> list[Route]:
     result = await session.execute(select(Route))
     return result.scalar().all()
+
+

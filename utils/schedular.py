@@ -4,8 +4,8 @@ from datetime import datetime
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sqlalchemy.sql import select
 
-from data.driverDb import Driver
-from data.init_tables import AsyncSessionLocal
+from utils.db_api.driverDb import Driver
+from utils.db_api.init_tables import AsyncSessionLocal
 
 schedular = AsyncIOScheduler()
 

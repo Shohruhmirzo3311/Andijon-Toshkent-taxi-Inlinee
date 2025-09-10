@@ -1,25 +1,30 @@
 from datetime import datetime, timedelta, timezone
+from typing import Optional
 
-from sqlalchemy import BigInteger, Boolean, Column, DateTime, Integer, String
+from sqlalchemy import BigInteger, Boolean, Column, DateTime, Integer, String, ForeignKey
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import delete, select, update
-from typing import Optional
-
-from data.init_tables import Base
+from sqlalchemy.orm import relationship
+from utils.db_api.init_tables import Base
 
 
 class Driver(Base):
     __tablename__ = "drivers"
     
     id = Column(Integer, primary_key=True, index=True)
+    city_id = Column(Integer, ForeignKey("cities.id", ondelete="CASCADE"))
+    
     account_id = Column(BigInteger, nullable=False)
     name = Column(String, nullable=False)
     phone = Column(String, nullable=False, unique=True)
     car_number = Column(String, nullable=False, unique=True)
+    
     active_until = Column(DateTime, nullable=True)
     is_active = Column(Boolean, default=False)
     type = Column(String, nullable=False)
+    
+    city = relationship("City", foreign_keys=[city_id])
     
     __mapper_args__ = {
         'polymorphic_on': type,

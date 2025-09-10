@@ -1,7 +1,8 @@
-from aiogram.dispatcher.filters import Filter
 from aiogram import types
+from aiogram.dispatcher.filters import Filter
 
 from loader import dp
+
 
 class CallbackActionStartswith(Filter):
     def __init__(self, prefix):
@@ -13,6 +14,7 @@ class CallbackActionStartswith(Filter):
         
         # Parse callback data
         from aiogram.utils.callback_data import CallbackData
+
         # This is a simplified approach - you might need to adjust based on your callback structure
         return call.data.startswith(self.prefix)
 

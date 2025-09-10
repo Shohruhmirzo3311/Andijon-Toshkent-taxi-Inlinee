@@ -1,21 +1,16 @@
-from aiogram.types import CallbackQuery, Message
 from aiogram.dispatcher import FSMContext
-from keyboards.inline.callbackData import driver_callback
+from aiogram.types import CallbackQuery, Message
 from sqlalchemy.sql import select
 
-
-
-import data.driverDb as db
-import data.init_tables as sas
-from states.DriverData import UpdateDriver
+import utils.db_api.driverDb as db
+import utils.db_api.init_tables as sas
 from filters import IsSuperUser
-from loader import dp
 from handlers.users.regexValidation import phone_pattern
-from states.state_finish import safe_state_finish
+from keyboards.inline.callbackData import driver_callback
 from keyboards.inline.menuKeyboard import driver_action_menu
-
-
-
+from loader import dp
+from states.DriverData import UpdateDriver
+from states.state_finish import safe_state_finish
 
 
 @dp.callback_query_handler(IsSuperUser, driver_callback.filter(action="update_driver"))
@@ -81,6 +76,7 @@ async def update_driver_data(message: Message, state: FSMContext):
 
 
 from datetime import datetime
+
 
 @dp.message_handler(state=UpdateDriver.waiting_for_new_data)
 async def process_new_data_and_update(message: Message, state: FSMContext):
